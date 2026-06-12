@@ -170,13 +170,14 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading]= useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
 
     try {
-
+      setLoading(true);
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
         {
@@ -203,6 +204,8 @@ const Login = () => {
 
       alert(error.response?.data?.message || "Login failed");
 
+    } finally{
+      setLoading(false);
     }
 
   };
@@ -255,10 +258,18 @@ const Login = () => {
 
         <button
           onClick={handleLogin}
+          disabled={loading}
           className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
         >
-          Login
+          {loading?"Logging in...":"Login"}
+          {/* Login */}
         </button>
+
+        {loading && (
+          <p className="text-gray-400 text-center">
+            Starting server... Please wait.
+          </p>
+        )}
 
         <p className="text-gray-400 text-center">
           Don't have an account?

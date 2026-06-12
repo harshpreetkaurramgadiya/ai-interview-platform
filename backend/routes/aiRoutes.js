@@ -1,12 +1,3 @@
-// const express = require("express");
-// const router= express.Router();
-
-// const {generateQuestions}= require("../controllers/aiController");
-
-// router.post("/generate-questions",generateQuestions);
-
-// module.exports= router;
-
 const express = require("express");
 const router = express.Router();
 
@@ -27,6 +18,53 @@ router.post("/generate", async (req, res) => {
         {
           role: "user",
           content: req.body.prompt,
+        },
+      ],
+    });
+
+    res.json({
+      success: true,
+      data: completion.choices[0].message.content,
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+});
+
+router.post("/evaluate", async (req, res) => {
+  try {
+
+    const { question, answer } = req.body;
+
+    const completion = await client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+
+      messages: [
+        {
+          role: "user",
+          content: `
+You are a technical interviewer.
+
+Question:
+${question}
+
+Candidate Answer:
+${answer}
+
+Evaluate the answer and provide:
+
+1. Score out of 10
+2. Strengths
+3. Areas for Improvement
+          `,
         },
       ],
     });

@@ -127,17 +127,19 @@ function Interview() {
 
   const role = location.state?.role;
 
-if (!role) {
-  return (
-    <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center text-2xl">
-      Please select a role first
-    </div>
-  );
-}
+  if (!role) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center text-2xl">
+        Please select a role first
+      </div>
+    );
+  }
 
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [answer, setAnswer] = useState("");
+  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     if (role) {
@@ -179,6 +181,28 @@ if (!role) {
     }
   };
 
+  const evaluateAnswer = async () => {
+    try {
+
+      const response = await axios.post(
+        "http://localhost:5000/api/ai/evaluate",
+        {
+          question: questions[currentQuestion],
+          answer: answer,
+        }
+      );
+
+      console.log(response.data);
+
+      setFeedback(response.data.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
+
   // 🔴 SAFE GUARD (IMPORTANT)
   if (!role) {
     return (
@@ -210,6 +234,31 @@ if (!role) {
             <p className="text-xl text-gray-300">
               {questions[currentQuestion]}
             </p>
+
+            <textarea
+              value={answer}
+              onChange={(e) =>
+                setAnswer(e.target.value)}
+              placeholder="Type your answer here..."
+              className="w-full p-4 rounded-lg text-black mt-4"
+            ></textarea>
+
+            <button
+              onClick={evaluateAnswer}
+              className="mt-4 bg-green-600 hover:bg-green-700 px-5 py-2 rounded-xl mr-4"
+            >Submit Answer</button>
+
+            {feedback && (
+              <div className="mt-4 bg-gray-800 p-4 rounded-xl">
+                <h3 className="font-bold text-lg mb-2">
+                  AI Feedback
+                </h3>
+
+                <p className="whitespace-pre-wrap">
+                  {feedback}
+                </p>
+              </div>
+            )}
 
             {/* NEXT BUTTON */}
             <button
