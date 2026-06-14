@@ -34,11 +34,11 @@ function Navbar() {
 
 </ul>
 
-      <button 
+      {/* <button 
       onClick={handleLogin}
       className="bg-blue-500 hover:bg-blue-600 px-5 py-2 rounded-lg">
         Login
-      </button>
+      </button> */}
 
     </nav>
   )
